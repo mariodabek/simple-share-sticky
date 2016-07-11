@@ -25,17 +25,38 @@ class simple_share_sticky{
     function simple_share_sticky_config($ajax=false){
 
         if (isset($_POST['options'])) { 
-            update_option('simple_share_sticky_fb', $_POST['share_on_facebook']); 
-            update_option('simple_share_sticky_tw', $_POST['share_on_twitter']); 
-            update_option('simple_share_sticky_g', $_POST['share_on_google']); 
-            update_option('simple_share_sticky_li', $_POST['share_on_linkedin']); 
-            update_option('simple_share_sticky_pt', $_POST['share_on_pinterest']); 
-            update_option('simple_share_sticky_su', $_POST['share_on_stumbleupon']); 
-            update_option('simple_share_sticky_posts', $_POST['share_on_posts']); 
-            update_option('simple_share_sticky_pages', $_POST['share_on_pages']); 
-            update_option('simple_share_sticky_custom', $_POST['share_on_custom_post_types']); 
-            update_option('simple_share_sticky_archive', $_POST['share_on_archive']); 
-            update_option('simple_share_sticky_home', $_POST['share_on_home']); 
+
+            $retrieved_nonce = $_POST['_sss_options'];
+
+            if (wp_verify_nonce($retrieved_nonce, 'update_sss_options' )) {
+
+                $options = array ( 
+                    array ('post_field' => 'share_on_facebook', 'option_field' => 'simple_share_sticky_fb'),
+                    array ('post_field' => 'share_on_twitter', 'option_field' => 'simple_share_sticky_tw'),
+                    array ('post_field' => 'share_on_google', 'option_field' => 'simple_share_sticky_g'),
+                    array ('post_field' => 'share_on_linkedin', 'option_field' => 'simple_share_sticky_li'),
+                    array ('post_field' => 'share_on_pinterest', 'option_field' => 'simple_share_sticky_pt'),
+                    array ('post_field' => 'share_on_stumbleupon', 'option_field' => 'simple_share_sticky_su'),
+                    array ('post_field' => 'share_on_posts', 'option_field' => 'simple_share_sticky_posts'),
+                    array ('post_field' => 'share_on_pages', 'option_field' => 'simple_share_sticky_pages'),
+                    array ('post_field' => 'share_on_custom_post_types', 'option_field' => 'simple_share_sticky_custom'),
+                    array ('post_field' => 'share_on_archive', 'option_field' => 'simple_share_sticky_archive'),
+                    array ('post_field' => 'share_on_home', 'option_field' => 'simple_share_sticky_home')
+
+                );
+
+                foreach ($options as $o) {
+
+                    $option = $o['option_field'];
+
+                    if (isset($_POST[$o['post_field']])) 
+                        update_option($option, 1);
+                    else 
+                        delete_option($option);
+                }
+
+            }
+
         }
 
         $fb_ck = get_option('simple_share_sticky_fb') ? 'checked' : '';
@@ -52,25 +73,24 @@ class simple_share_sticky{
 
         echo '<div id="ss_settings">';
         echo '<h1><div class="title">Simple Share Sticky Options</div></div></h1>';
-        echo "
-                <form method='post' id='simple_share_sticky' class='admin'>
-                    <input name='options' type='hidden' value='1'>
-                    <h2>Select Networks</h2>
-                    <label class='icon icon-facebook'>Facebook</label><input type='checkbox' $fb_ck name='share_on_facebook'>
-                    <label class='icon icon-twitter'>Twitter</label><input type='checkbox' $tw_ck name='share_on_twitter'>
-                    <label class='icon icon-google'>Google</label><input type='checkbox' $g_ck name='share_on_google'>
-                    <label class='icon icon-linkedin'>LinkedIn</label><input type='checkbox' $li_ck name='share_on_linkedin'>
-                    <label class='icon icon-pinterest'>Pinterest</label><input type='checkbox' $pt_ck name='share_on_pinterest'>
-                    <label class='icon icon-stumbleupon'>Stumbleupon</label><input type='checkbox' $su_ck name='share_on_stumbleupon'>
-                    <h2>Enable on the following</h2>
-                    <label>Posts</label><input type='checkbox' $posts_ck name='share_on_posts'>
-                    <label>Pages</label><input type='checkbox' $pages_ck name='share_on_pages'>
-                    <label>Custom Post Types</label><input type='checkbox' $custom_ck name='share_on_custom_post_types'>
-                    <label>Archive Pages</label><input type='checkbox' $archive_ck name='share_on_archive'>
-                    <label>Home Page / Front Page</label><input type='checkbox' $home_ck name='share_on_home'>
-                    <input type='submit' value='Save' />
-                </form>
-
+        echo "<form method='post' id='simple_share_sticky' class='admin'>";
+                wp_nonce_field('update_sss_options', '_sss_options');
+        echo "  <input name='options' type='hidden' value='1'>
+                <h2>Select Networks</h2>
+                <label class='icon icon-facebook'>Facebook</label><input type='checkbox' $fb_ck name='share_on_facebook'>
+                <label class='icon icon-twitter'>Twitter</label><input type='checkbox' $tw_ck name='share_on_twitter'>
+                <label class='icon icon-google'>Google</label><input type='checkbox' $g_ck name='share_on_google'>
+                <label class='icon icon-linkedin'>LinkedIn</label><input type='checkbox' $li_ck name='share_on_linkedin'>
+                <label class='icon icon-pinterest'>Pinterest</label><input type='checkbox' $pt_ck name='share_on_pinterest'>
+                <label class='icon icon-stumbleupon'>Stumbleupon</label><input type='checkbox' $su_ck name='share_on_stumbleupon'>
+                <h2>Enable on the following</h2>
+                <label>Posts</label><input type='checkbox' $posts_ck name='share_on_posts'>
+                <label>Pages</label><input type='checkbox' $pages_ck name='share_on_pages'>
+                <label>Custom Post Types</label><input type='checkbox' $custom_ck name='share_on_custom_post_types'>
+                <label>Archive Pages</label><input type='checkbox' $archive_ck name='share_on_archive'>
+                <label>Home Page / Front Page</label><input type='checkbox' $home_ck name='share_on_home'>
+                <input type='submit' value='Save' />
+            </form>
         ";
         echo '</div>';    
 
